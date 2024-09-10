@@ -1,6 +1,9 @@
 package com.example.oauthjwt2.service;
 
 import com.example.oauthjwt2.dto.*;
+import com.example.oauthjwt2.entity.UserEntity;
+import com.example.oauthjwt2.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -8,7 +11,10 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+
+    private final UserRepository userRepository;
 
 
     @Override
@@ -41,15 +47,47 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 
 
-        //리소스 서버에서 넘기는 username은 겨ㅂ칠 수있기 때문에 우리만의 username을 설정해줌
+        //리소스 서버에서 넘기는 username은 겹칠 수 있기 때문에 우리만의 username을 설정해줌
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
+        UserEntity existData=userRepository.findByUsername(username);
 
-        UserDTO userDTO = UserDTO.builder()
-                .username(username)
-                .name(oAuth2Response.getName())
-                .role("ROLE_USER")
-                .build();
+        if(existData==null){
 
-        return new CustomOAuth2User(userDTO);
+            UserEntity newUser = UserEntity.builder()
+                    .username(username)
+                    .name(oAuth2Response.getName())
+                    .email(oAuth2Response.getEmail())
+                    .role("ROLE_UESR")
+                    .build();
+
+            userRepository.save(newUser);
+
+
+            UserDTO userDTO = UserDTO.builder()
+                    .username(username)
+                    .name(oAuth2Response.getName())
+                    .role("ROLE_USER")
+                    .build();
+
+            return new CustomOAuth2User(userDTO);
+
+        }else {
+
+
+            existData.setEmail(oAuth2Response.getEmail());
+            existData.setName(oAuth2Response.getName());
+
+            userRepository.save(existData);
+
+            UserDTO userDTO = UserDTO.builder()
+                    .username(existData.getUsername())
+                    .name(oAuth2Response.getName())
+                    .role(existData.getRole())
+                    .build();
+
+            return new CustomOAuth2User(userDTO);
+
+        }
+
     }
 }

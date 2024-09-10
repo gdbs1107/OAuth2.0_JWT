@@ -1,11 +1,9 @@
-package com.example.oauthjwt2.dto;
-
-import lombok.RequiredArgsConstructor;
+package com.example.oauthjwt2.dto.response;
 
 import java.util.Map;
 
 
-public class NaverResponse implements OAuth2Response{
+public class NaverResponse implements OAuth2Response {
 
     private final Map<String, Object> attribute;
 

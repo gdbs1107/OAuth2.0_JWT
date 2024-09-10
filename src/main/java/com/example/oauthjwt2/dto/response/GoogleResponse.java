@@ -1,4 +1,4 @@
-package com.example.oauthjwt2.dto;
+package com.example.oauthjwt2.dto.response;
 
 import lombok.RequiredArgsConstructor;
 

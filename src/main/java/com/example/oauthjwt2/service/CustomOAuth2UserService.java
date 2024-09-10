@@ -1,6 +1,10 @@
 package com.example.oauthjwt2.service;
 
 import com.example.oauthjwt2.dto.*;
+import com.example.oauthjwt2.dto.response.GoogleResponse;
+import com.example.oauthjwt2.dto.response.KakaoResponse;
+import com.example.oauthjwt2.dto.response.NaverResponse;
+import com.example.oauthjwt2.dto.response.OAuth2Response;
 import com.example.oauthjwt2.entity.UserEntity;
 import com.example.oauthjwt2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +45,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             oAuth2Response=new GoogleResponse(oAuth2User.getAttributes());
 
 
-        }else {
+        }else if (registrationId.equals("kakao")){
+
+            oAuth2Response=new KakaoResponse(oAuth2User.getAttributes());
+
+        }
+        else {
             return null;
         }
 
@@ -57,7 +66,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .username(username)
                     .name(oAuth2Response.getName())
                     .email(oAuth2Response.getEmail())
-                    .role("ROLE_UESR")
+                    .role("ROLE_USER")
                     .build();
 
             userRepository.save(newUser);

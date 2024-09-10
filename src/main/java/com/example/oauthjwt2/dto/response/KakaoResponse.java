@@ -1,22 +1,23 @@
 package com.example.oauthjwt2.dto.response;
 
-import lombok.RequiredArgsConstructor;
-
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class KakaoResponse implements OAuth2Response {
 
-    private final Map<String, Object> attribute;
+    private final String providerId;
+    private final String name;
+    private final String email;
 
-    // 카카오 계정 정보를 가져오기 위한 헬퍼 메소드
-    private Map<String, Object> getKakaoAccount() {
-        return (Map<String, Object>) attribute.get("kakao_account");
-    }
+    public KakaoResponse(Map<String, Object> attributes) {
+        // 'id'는 카카오 응답의 최상위 요소에서 가져옵니다.
+        this.providerId = String.valueOf(attributes.get("id"));
 
-    // 카카오 프로필 정보를 가져오기 위한 헬퍼 메소드
-    private Map<String, Object> getProfile() {
-        return (Map<String, Object>) getKakaoAccount().get("profile");
+        // 'properties'와 'kakao_account'에서 사용자 정보를 가져옵니다.
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+
+        this.name = (String) properties.get("nickname");
+        this.email = (String) kakaoAccount.get("email");
     }
 
     @Override
@@ -26,19 +27,16 @@ public class KakaoResponse implements OAuth2Response {
 
     @Override
     public String getProviderId() {
-        return attribute.get("id").toString();
-    }
-
-    @Override
-    public String getEmail() {
-        Map<String, Object> kakaoAccount = getKakaoAccount();
-        return kakaoAccount.get("email") != null ? kakaoAccount.get("email").toString() : null;
+        return providerId;
     }
 
     @Override
     public String getName() {
-        Map<String, Object> profile = getProfile();
-        return profile.get("nickname") != null ? profile.get("nickname").toString() : null;
+        return name;
+    }
+
+    @Override
+    public String getEmail() {
+        return email;
     }
 }
-

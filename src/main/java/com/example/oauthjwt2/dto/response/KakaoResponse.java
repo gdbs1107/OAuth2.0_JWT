@@ -4,20 +4,19 @@ import java.util.Map;
 
 public class KakaoResponse implements OAuth2Response {
 
-    private final String providerId;
-    private final String name;
-    private final String email;
+    private Map<String, Object> attributes; // getAttributes
+    private Map<String, Object> attributesProperties; // getAttributes
+    private Map<String, Object> attributesAccount; // getAttributes
 
     public KakaoResponse(Map<String, Object> attributes) {
-        // 'id'는 카카오 응답의 최상위 요소에서 가져옵니다.
-        this.providerId = String.valueOf(attributes.get("id"));
+        this.attributes = attributes;
+        this.attributesProperties = (Map<String, Object>) attributes.get("properties");
+        this.attributesAccount = (Map<String, Object>) attributes.get("kakao_account");
+    }
 
-        // 'properties'와 'kakao_account'에서 사용자 정보를 가져옵니다.
-        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-
-        this.name = (String) properties.get("nickname");
-        this.email = (String) kakaoAccount.get("email");
+    @Override
+    public String getProviderId() {
+        return attributes.get("id").toString();
     }
 
     @Override
@@ -26,17 +25,12 @@ public class KakaoResponse implements OAuth2Response {
     }
 
     @Override
-    public String getProviderId() {
-        return providerId;
+    public String getEmail() {
+        return (String) attributesAccount.get("email");
     }
 
     @Override
     public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getEmail() {
-        return email;
+        return (String) attributesProperties.get("nickname");
     }
 }

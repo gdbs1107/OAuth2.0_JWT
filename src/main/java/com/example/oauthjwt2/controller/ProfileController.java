@@ -18,6 +18,10 @@ public class ProfileController {
     @GetMapping("/")
     public String getName(@AuthenticationPrincipal UserEntity user) {
 
+        if (user == null) {
+            throw new RuntimeException("User is not authenticated");
+        }
+
         String username = user.getUsername();
         return profileService.getName(username);
     }

@@ -1,14 +1,12 @@
 package com.example.oauthjwt2.controller;
 
+import com.example.oauthjwt2.dto.AccessDTO;
 import com.example.oauthjwt2.service.OAuth2JWTHeaderService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 /*OAuth소셜로그인 특성상, 로그인을 진행할때 하이퍼링크를 통해 진행되고
@@ -19,13 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/")
 public class OAuth2Controller {
 
     private final OAuth2JWTHeaderService oAuth2JwtHeaderService;
 
 
-    @GetMapping("/oauth2-jwt-header")
-    public String oauth2JwtHeader(HttpServletRequest request, HttpServletResponse response) {
+    @PostMapping("/oauth2-jwt-header")
+    public AccessDTO oauth2JwtHeader(HttpServletRequest request, HttpServletResponse response) {
         log.info("oauth2-jwt-header 컨트롤러가 실행됩니다");
         return oAuth2JwtHeaderService.oauth2JwtHeaderSet(request, response);
     }

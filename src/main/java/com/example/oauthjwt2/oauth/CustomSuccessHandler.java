@@ -62,5 +62,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String encodedName = URLEncoder.encode(name, "UTF-8");
         response.sendRedirect("http://localhost:3000/oauth2-jwt-header?name=" + encodedName);
 
+
     }
 }

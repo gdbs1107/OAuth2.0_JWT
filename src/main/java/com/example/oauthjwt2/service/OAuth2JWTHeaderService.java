@@ -1,6 +1,7 @@
 package com.example.oauthjwt2.service;
 
 import com.example.oauthjwt2.CookieUtil;
+import com.example.oauthjwt2.dto.AccessDTO;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class OAuth2JWTHeaderService {
 
-    public String oauth2JwtHeaderSet(HttpServletRequest request, HttpServletResponse response) {
+    public AccessDTO oauth2JwtHeaderSet(HttpServletRequest request, HttpServletResponse response) {
 
         log.info("oauth2JwtHeaderSet을 실행합니다");
         //쿠키를 가져온다
@@ -27,7 +28,8 @@ public class OAuth2JWTHeaderService {
         //쿠키에 대한 accessToken의 검증 처리
         if(cookies == null){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return "bad";
+            log.info("bad");
+            return null;
         }
         for (Cookie cookie : cookies) {
             if(cookie.getName().equals("access")){
@@ -37,14 +39,19 @@ public class OAuth2JWTHeaderService {
 
         if(access == null){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return "bad";
+            log.info("bad");
+            return null;
         }
 
         // 클라이언트의 access 토큰 쿠키를 만료, 그리고 추출된 토큰은 헤더에 담아 다시 보낸다
         response.addCookie(CookieUtil.createCookie("access", null, 0));
-        response.addHeader("access", access);
+/*        response.addHeader("access", access);*/
         response.setStatus(HttpServletResponse.SC_OK);
 
-        return "success";
-    }
+        AccessDTO accessToken = AccessDTO.builder()
+                .token(access)
+                .build();
+
+        return accessToken;
+}
 }

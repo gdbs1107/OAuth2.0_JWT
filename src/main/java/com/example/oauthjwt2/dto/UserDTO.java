@@ -24,4 +24,13 @@ public class UserDTO {
         private String email;
         private String name;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoginDTO{
+        private String username;
+        private String password;
+    }
 }

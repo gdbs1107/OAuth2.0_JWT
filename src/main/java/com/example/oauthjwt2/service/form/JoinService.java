@@ -4,6 +4,7 @@ import com.example.oauthjwt2.dto.UserDTO;
 import com.example.oauthjwt2.entity.UserEntity;
 import com.example.oauthjwt2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class JoinService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void join(UserDTO.JoinDTO request){
 
@@ -25,7 +27,7 @@ public class JoinService {
 
         UserEntity newUser = UserEntity.builder()
                 .username(request.getUsername())
-                .password(request.getPassword())
+                .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
                 .role("ROLE_USER")
                 .name(request.getName())

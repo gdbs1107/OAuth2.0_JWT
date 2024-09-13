@@ -2,8 +2,9 @@ package com.example.oauthjwt2.config;
 
 import com.example.oauthjwt2.jwt.JWTFilter;
 import com.example.oauthjwt2.jwt.JWTUtil;
+import com.example.oauthjwt2.jwt.LoginFilter;
 import com.example.oauthjwt2.oauth.CustomSuccessHandler;
-import com.example.oauthjwt2.service.form.CustomFormSuccessHandler;
+import com.example.oauthjwt2.repository.RefreshRepository;
 import com.example.oauthjwt2.service.oauth.CustomOAuth2UserService;
 import com.example.oauthjwt2.service.RefreshTokenService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,10 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -34,7 +38,19 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshRepository refreshRepository;
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    //AuthenticationManager Bean 등록, UsernamePasswordAuthenticationFilter에서 필요하기 때문에 생성자로 주입해
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+
+        return configuration.getAuthenticationManager();
+    }
 
 
     @Bean
@@ -50,7 +66,7 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
 
 
         http
@@ -90,14 +106,6 @@ public class SecurityConfig {
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-        // form
-        http
-                .formLogin((form) -> form.loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .successHandler(new CustomFormSuccessHandler(refreshTokenService,jwtUtil))
-                        .failureHandler(authenticationFailureHandler())
-                        .permitAll());
-
 
         //oauth2
         http
@@ -107,10 +115,13 @@ public class SecurityConfig {
                         .successHandler(customSuccessHandler)
                 );
 
+        http
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,refreshRepository), UsernamePasswordAuthenticationFilter.class);
+
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/","/user/join").permitAll()
+                        .requestMatchers("/","/user/join","/login").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers("/test").permitAll()
                         .anyRequest().authenticated());

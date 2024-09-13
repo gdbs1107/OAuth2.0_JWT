@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class OAuth2JWTHeaderService {
 
-    public AccessDTO oauth2JwtHeaderSet(HttpServletRequest request, HttpServletResponse response) {
+    public String oauth2JwtHeaderSet(HttpServletRequest request, HttpServletResponse response) {
 
         log.info("oauth2JwtHeaderSet을 실행합니다");
         //쿠키를 가져온다
@@ -45,13 +45,9 @@ public class OAuth2JWTHeaderService {
 
         // 클라이언트의 access 토큰 쿠키를 만료, 그리고 추출된 토큰은 헤더에 담아 다시 보낸다
         response.addCookie(CookieUtil.createCookie("access", null, 0));
-/*        response.addHeader("access", access);*/
+        response.addHeader("Authorization", access);
         response.setStatus(HttpServletResponse.SC_OK);
 
-        AccessDTO accessToken = AccessDTO.builder()
-                .token(access)
-                .build();
-
-        return accessToken;
+        return "success";
 }
 }

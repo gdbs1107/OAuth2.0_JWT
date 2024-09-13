@@ -24,7 +24,7 @@ public class OAuth2Controller {
 
 
     @PostMapping("/oauth2-jwt-header")
-    public AccessDTO oauth2JwtHeader(HttpServletRequest request, HttpServletResponse response) {
+    public String oauth2JwtHeader(HttpServletRequest request, HttpServletResponse response) {
         log.info("oauth2-jwt-header 컨트롤러가 실행됩니다");
         return oAuth2JwtHeaderService.oauth2JwtHeaderSet(request, response);
     }

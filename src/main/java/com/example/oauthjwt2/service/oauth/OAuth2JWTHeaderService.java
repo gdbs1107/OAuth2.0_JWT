@@ -1,7 +1,6 @@
 package com.example.oauthjwt2.service.oauth;
 
 import com.example.oauthjwt2.CookieUtil;
-import com.example.oauthjwt2.dto.AccessDTO;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,7 +44,7 @@ public class OAuth2JWTHeaderService {
 
         // 클라이언트의 access 토큰 쿠키를 만료, 그리고 추출된 토큰은 헤더에 담아 다시 보낸다
         response.addCookie(CookieUtil.createCookie("access", null, 0));
-        response.addHeader("Authorization", access);
+        response.addHeader("access", access);
         response.setStatus(HttpServletResponse.SC_OK);
 
         return "success";

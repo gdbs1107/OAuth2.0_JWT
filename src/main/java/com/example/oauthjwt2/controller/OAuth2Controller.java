@@ -1,6 +1,5 @@
 package com.example.oauthjwt2.controller;
 
-import com.example.oauthjwt2.dto.AccessDTO;
 import com.example.oauthjwt2.service.oauth.OAuth2JWTHeaderService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

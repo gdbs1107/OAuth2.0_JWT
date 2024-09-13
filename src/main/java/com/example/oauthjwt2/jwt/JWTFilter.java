@@ -27,7 +27,7 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        log.info("JWTFilter가 동작합니다");
+        log.info("JWTFilter가 작동합니다");
         String access = null;
 
 
@@ -36,7 +36,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
             System.out.println(cookie.getName());
             if (cookie.getName().equals("access")) {
-
                 access = cookie.getValue();
             }
         }

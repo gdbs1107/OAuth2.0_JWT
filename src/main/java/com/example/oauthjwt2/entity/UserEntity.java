@@ -18,10 +18,12 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String username;
     private String name;
     private String role;
     private String email;
+    private String password;
 
 
     public void setEmail(String email) {

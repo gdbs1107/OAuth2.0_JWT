@@ -1,4 +1,4 @@
-package com.example.oauthjwt2.service;
+package com.example.oauthjwt2.service.oauth;
 
 import com.example.oauthjwt2.CookieUtil;
 import com.example.oauthjwt2.dto.AccessDTO;

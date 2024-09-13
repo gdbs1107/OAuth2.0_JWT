@@ -1,4 +1,4 @@
-package com.example.oauthjwt2.service;
+package com.example.oauthjwt2.service.oauth;
 
 import com.example.oauthjwt2.dto.*;
 import com.example.oauthjwt2.dto.response.GoogleResponse;
@@ -66,6 +66,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .username(username)
                     .name(oAuth2Response.getName())
                     .email(oAuth2Response.getEmail())
+                    .password("tempPassword")
                     .role("ROLE_USER")
                     .build();
 

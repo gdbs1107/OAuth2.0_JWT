@@ -11,4 +11,17 @@ public class UserDTO {
     private String username;
     private String name;
     private String role;
+
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class JoinDTO{
+
+        private String username;
+        private String password;
+        private String email;
+        private String name;
+    }
 }

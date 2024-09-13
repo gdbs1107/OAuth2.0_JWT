@@ -3,20 +3,26 @@ package com.example.oauthjwt2.config;
 import com.example.oauthjwt2.jwt.JWTFilter;
 import com.example.oauthjwt2.jwt.JWTUtil;
 import com.example.oauthjwt2.oauth.CustomSuccessHandler;
-import com.example.oauthjwt2.service.CustomOAuth2UserService;
+import com.example.oauthjwt2.service.form.CustomFormSuccessHandler;
+import com.example.oauthjwt2.service.oauth.CustomOAuth2UserService;
+import com.example.oauthjwt2.service.RefreshTokenService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -28,6 +34,19 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
+
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler(){
+        return new AuthenticationFailureHandler() {
+            @Override
+            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
+                System.out.println("exception = " + exception);
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            }
+        };
+    }
 
 
     @Bean
@@ -71,6 +90,15 @@ public class SecurityConfig {
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
+        // form
+        http
+                .formLogin((form) -> form.loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .successHandler(new CustomFormSuccessHandler(refreshTokenService,jwtUtil))
+                        .failureHandler(authenticationFailureHandler())
+                        .permitAll());
+
+
         //oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
@@ -82,7 +110,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/","/user/join").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers("/test").permitAll()
                         .anyRequest().authenticated());

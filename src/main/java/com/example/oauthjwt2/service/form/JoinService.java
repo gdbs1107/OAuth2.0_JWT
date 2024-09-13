@@ -25,12 +25,15 @@ public class JoinService {
             throw new RuntimeException("이미 가입된 계정입니다");
         }
 
+
+        //이메일은 기본 로그인에서는 제공하지 않음. 소셜로그인만 가능하기 때문에 temp 주입
         UserEntity newUser = UserEntity.builder()
                 .username(request.getUsername())
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
                 .role("ROLE_USER")
                 .name(request.getName())
+                .email("temp@temp.com")
                 .build();
 
         userRepository.save(newUser);

@@ -34,6 +34,9 @@ public class JoinService {
                 .role("ROLE_USER")
                 .name(request.getName())
                 .email("temp@temp.com")
+                .phone(request.getPhone())
+                .birthDate(request.getBirthDate())
+                .nickName(request.getNickName())
                 .build();
 
         userRepository.save(newUser);

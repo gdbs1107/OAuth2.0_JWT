@@ -60,6 +60,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
         UserEntity existData=userRepository.findByUsername(username);
 
+        //처음 회원가입하는 유저
         if(existData==null){
 
             UserEntity newUser = UserEntity.builder()
@@ -78,6 +79,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .name(oAuth2Response.getName())
                     .role("ROLE_USER")
                     .build();
+
 
             return new CustomOAuth2User(userDTO);
 

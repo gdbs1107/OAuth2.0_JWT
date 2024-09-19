@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -25,6 +27,11 @@ public class UserEntity {
     private String email;
     private String password;
 
+    //임시적인 회원 추가정보
+    private String nickName;
+    private LocalDateTime birthDate;
+    private String phone;
+
 
     public void setEmail(String email) {
         if (email != null) {
@@ -38,5 +45,12 @@ public class UserEntity {
             this.name = name;
         }
         return;
+    }
+
+
+    public void setUserInfo(String nickName, LocalDateTime birthDate, String phone) {
+        this.nickName = nickName;
+        this.birthDate = birthDate;
+        this.phone = phone;
     }
 }
